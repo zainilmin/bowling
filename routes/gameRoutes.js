@@ -1,3 +1,5 @@
+var checkException = require('../handler/pinsHandler').checkException;
+var throwHandler = require('../handler/pinsHandler').throwHandler;
 var game = require('../models/game');
 var player = require('../models/player');
 
@@ -38,10 +40,17 @@ module.exports = app => {
   });
 
   app.post('/api/:gameid/:playername/throw/:pins', (req, res) => {
+    var currentPlayer = gameTable[req.params.gameid].players[req.params.playername];
 
+    checkException(req.params.pins, currentPlayer, res);
+    throwHandler(req.params.pins, currentPlayer, res);
+
+    res.send({"Pins": req.params.pins + " pins were knocked"});
   });
 
   app.get('/api/score/:gameid/:playername', (req, res) => {
+    var currentPlayer = gameTable[req.params.gameid].players[req.params.playername];
 
+    res.send(currentPlayer.totalScore);
   });
 }
